@@ -1,5 +1,6 @@
 import os
 import requests
+from datetime import datetime, timezone
 
 TOKEN = os.environ["TELEGRAM_TOKEN"]
 CHAT_ID = os.environ["TELEGRAM_CHAT_ID"]
@@ -10,15 +11,15 @@ MOEDAS = {
 }
 
 
-def buscar_precos():
+def buscar_dados():
     url = (
-        "https://api.coingecko.com/api/v3/simple/price"
-        "?ids=bitcoin,ethereum"
-        "&vs_currencies=brl,usd"
-        "&include_24hr_change=true"
+        "https://api.coingecko.com/api/v3/coins/markets"
+        "?vs_currency=brl"
+        "&ids=bitcoin,ethereum"
+        "&price_change_percentage=1h,24h,7d"
     )
 
-    resposta = requests.get(url, timeout=10)
+    resposta = requests.get(url, timeout=15)
     resposta.raise_for_status()
 
     return resposta.json()
@@ -33,26 +34,30 @@ def enviar_mensagem(texto):
             "chat_id": CHAT_ID,
             "text": texto
         },
-        timeout=10
+        timeout=15
     )
 
     resposta.raise_for_status()
 
 
-dados = buscar_precos()
+dados = buscar_dados()
 
 mensagem = "🚀 BTC & ETH ALERT PRO\n\n"
 
-for moeda, nome in MOEDAS.items():
-    preco_brl = dados[moeda]["brl"]
-    preco_usd = dados[moeda]["usd"]
-    variacao = dados[moeda]["usd_24h_change"]
+for moeda in dados:
+    nome = MOEDAS[moeda["id"]]
+
+    preco = moeda["current_price"]
+    variacao_1h = moeda.get("price_change_percentage_1h_in_currency")
+    variacao_24h = moeda.get("price_change_percentage_24h_in_currency")
+    variacao_7d = moeda.get("price_change_percentage_7d_in_currency")
 
     mensagem += (
         f"{nome}\n"
-        f"🇧🇷 R$ {preco_brl:,.2f}\n"
-        f"💵 US$ {preco_usd:,.2f}\n"
-        f"📊 24h: {variacao:+.2f}%\n\n"
+        f"🇧🇷 R$ {preco:,.2f}\n"
+        f"🕐 1h: {variacao_1h:+.2f}%\n"
+        f"📅 24h: {variacao_24h:+.2f}%\n"
+        f"📆 7d: {variacao_7d:+.2f}%\n\n"
     )
 
 enviar_mensagem(mensagem)
