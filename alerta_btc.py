@@ -10,6 +10,7 @@ MOEDAS = {
     "ethereum": "Ξ Ethereum"
 }
 
+LIMITES = [3, 5, 10]
 
 def buscar_dados():
     url = (
@@ -60,6 +61,29 @@ for moeda in dados:
         f"📆 7d: {variacao_7d:+.2f}%\n\n"
     )
 
-enviar_mensagem(mensagem)
+for moeda in dados:
+    nome = MOEDAS[moeda["id"]]
 
-print(mensagem)
+    variacoes = {
+        "1h": moeda.get("price_change_percentage_1h_in_currency"),
+        "24h": moeda.get("price_change_percentage_24h_in_currency"),
+        "7d": moeda.get("price_change_percentage_7d_in_currency")
+    }
+
+    for periodo, variacao in variacoes.items():
+        if variacao is None:
+            continue
+
+        for limite in LIMITES:
+            if abs(variacao) >= limite:
+                direcao = "📈 SUBIU" if variacao > 0 else "📉 CAIU"
+
+                mensagem_alerta = (
+                    f"🚨 ALERTA {nome}\n\n"
+                    f"{direcao} {abs(variacao):.2f}% em {periodo}\n"
+                    f"🇧🇷 Preço: R$ {moeda['current_price']:,.2f}\n"
+                    f"🎯 Limite: {limite}%"
+                )
+
+                enviar_mensagem(mensagem_alerta)
+                break
