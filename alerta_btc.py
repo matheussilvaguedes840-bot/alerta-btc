@@ -36,7 +36,7 @@ def enviar_mensagem(texto):
 
     resposta.raise_for_status()
 
-
+enviar_mensagem("🧪 TESTE: o alerta do BTC está funcionando!")
 preco, variacao = dados_btc()
 
 print(f"BTC: US$ {preco:,.2f}")
