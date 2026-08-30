@@ -49,7 +49,7 @@ dados = buscar_dados()
 
 agora = datetime.now(timezone.utc)
 
-if True:
+if agora.minute < 5:
 
     mensagem = (
         f"🕐 RESUMO BTC & ETH\n"
