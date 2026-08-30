@@ -5,7 +5,7 @@ from pathlib import Path
 TOKEN = os.environ["TELEGRAM_TOKEN"]
 CHAT_ID = os.environ["TELEGRAM_CHAT_ID"]
 
-LIMITE = 5.0
+LIMITE = 3.0
 
 
 def dados_btc():
@@ -36,7 +36,7 @@ def enviar_mensagem(texto):
 
     resposta.raise_for_status()
 
-enviar_mensagem("🧪 TESTE: o alerta do BTC está funcionando!")
+
 preco, variacao = dados_btc()
 
 print(f"BTC: US$ {preco:,.2f}")
