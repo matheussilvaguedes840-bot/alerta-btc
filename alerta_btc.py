@@ -1,11 +1,13 @@
 import os
 import requests
-import time
+from pathlib import Path
 
 TOKEN = os.environ["TELEGRAM_TOKEN"]
 CHAT_ID = os.environ["TELEGRAM_CHAT_ID"]
 
 LIMITE = 0.05
+ARQUIVO = Path("preco_anterior.txt")
+
 
 def preco_btc():
     url = "https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT"
@@ -13,43 +15,41 @@ def preco_btc():
     resposta.raise_for_status()
     return float(resposta.json()["price"])
 
+
 def enviar_mensagem(texto):
     url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
-    requests.post(
+    resposta = requests.post(
         url,
         data={"chat_id": CHAT_ID, "text": texto},
         timeout=10
     )
+    resposta.raise_for_status()
 
-preco_inicial = preco_btc()
 
-print(f"BTC inicial: US$ {preco_inicial:,.2f}")
-print("Monitorando BTC...")
+preco_atual = preco_btc()
 
-while True:
-    try:
-        preco_atual = preco_btc()
-        variacao = (preco_atual - preco_inicial) / preco_inicial
+if ARQUIVO.exists():
+    preco_anterior = float(ARQUIVO.read_text())
+else:
+    preco_anterior = preco_atual
 
-        print(
-            f"BTC: US$ {preco_atual:,.2f} | "
-            f"Variação: {variacao * 100:.2f}%"
-        )
+variacao = (preco_atual - preco_anterior) / preco_anterior
 
-        if variacao <= -LIMITE:
-            enviar_mensagem(
-                f"📉 BTC caiu 5%!\nPreço: US$ {preco_atual:,.2f}"
-            )
-            preco_inicial = preco_atual
+print(f"BTC: US$ {preco_atual:,.2f}")
+print(f"Variação: {variacao * 100:.2f}%")
 
-        elif variacao >= LIMITE:
-            enviar_mensagem(
-                f"📈 BTC subiu 5%!\nPreço: US$ {preco_atual:,.2f}"
-            )
-            preco_inicial = preco_atual
+if variacao <= -LIMITE:
+    enviar_mensagem(
+        f"📉 BTC caiu 5%!\n"
+        f"Preço atual: US$ {preco_atual:,.2f}\n"
+        f"Variação: {variacao * 100:.2f}%"
+    )
 
-        time.sleep(60)
+elif variacao >= LIMITE:
+    enviar_mensagem(
+        f"📈 BTC subiu 5%!\n"
+        f"Preço atual: US$ {preco_atual:,.2f}\n"
+        f"Variação: {variacao * 100:.2f}%"
+    )
 
-    except Exception as erro:
-        print("Erro:", erro)
-        time.sleep(60)
+ARQUIVO.write_text(str(preco_atual))
