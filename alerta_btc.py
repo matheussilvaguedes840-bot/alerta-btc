@@ -12,6 +12,7 @@ MOEDAS = {
 
 LIMITES = [3, 5, 10]
 
+
 def buscar_dados():
     url = (
         "https://api.coingecko.com/api/v3/coins/markets"
@@ -22,7 +23,6 @@ def buscar_dados():
 
     resposta = requests.get(url, timeout=15)
     resposta.raise_for_status()
-
     return resposta.json()
 
 
@@ -43,47 +43,41 @@ def enviar_mensagem(texto):
 
 dados = buscar_dados()
 
-mensagem = "🚀 BTC & ETH ALERT PRO\n\n"
+# =========================
+# RESUMO HORÁRIO
+# =========================
 
-for moeda in dados:
-    nome = MOEDAS[moeda["id"]]
+agora = datetime.now(timezone.utc)
 
-    preco = moeda["current_price"]
-    variacao_1h = moeda.get("price_change_percentage_1h_in_currency")
-    variacao_24h = moeda.get("price_change_percentage_24h_in_currency")
-    variacao_7d = moeda.get("price_change_percentage_7d_in_currency")
+if agora.minute < 5:
 
-    mensagem += (
-        f"{nome}\n"
-        f"🇧🇷 R$ {preco:,.2f}\n"
-        f"🕐 1h: {variacao_1h:+.2f}%\n"
-        f"📅 24h: {variacao_24h:+.2f}%\n"
-        f"📆 7d: {variacao_7d:+.2f}%\n\n"
+    mensagem = (
+        f"🕐 RESUMO BTC & ETH\n"
+        f"🗓️ {agora.strftime('%d/%m/%Y %H:%M')} UTC\n\n"
     )
 
-for moeda in dados:
-    nome = MOEDAS[moeda["id"]]
+    for moeda in dados:
+        nome = MOEDAS[moeda["id"]]
 
-    variacoes = {
-        "1h": moeda.get("price_change_percentage_1h_in_currency"),
-        "24h": moeda.get("price_change_percentage_24h_in_currency"),
-        "7d": moeda.get("price_change_percentage_7d_in_currency")
-    }
+        preco = moeda["current_price"]
+        variacao_1h = moeda.get(
+            "price_change_percentage_1h_in_currency"
+        )
+        variacao_24h = moeda.get(
+            "price_change_percentage_24h_in_currency"
+        )
+        variacao_7d = moeda.get(
+            "price_change_percentage_7d_in_currency"
+        )
 
-    for periodo, variacao in variacoes.items():
-        if variacao is None:
-            continue
+        mensagem += (
+            f"{nome}\n"
+            f"🇧🇷 R$ {preco:,.2f}\n"
+            f"🕐 1h: {variacao_1h:+.2f}%\n"
+            f"📅 24h: {variacao_24h:+.2f}%\n"
+            f"📆 7d: {variacao_7d:+.2f}%\n\n"
+        )
 
-        for limite in LIMITES:
-            if abs(variacao) >= limite:
-                direcao = "📈 SUBIU" if variacao > 0 else "📉 CAIU"
+    enviar_mensagem(mensagem)
 
-                mensagem_alerta = (
-                    f"🚨 ALERTA {nome}\n\n"
-                    f"{direcao} {abs(variacao):.2f}% em {periodo}\n"
-                    f"🇧🇷 Preço: R$ {moeda['current_price']:,.2f}\n"
-                    f"🎯 Limite: {limite}%"
-                )
-
-                enviar_mensagem(mensagem_alerta)
-                break
+print("Verificação concluída.")
