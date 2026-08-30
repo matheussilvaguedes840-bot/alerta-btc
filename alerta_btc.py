@@ -1,25 +1,27 @@
 import os
 import requests
-from pathlib import Path
 
 TOKEN = os.environ["TELEGRAM_TOKEN"]
 CHAT_ID = os.environ["TELEGRAM_CHAT_ID"]
 
-LIMITE = 3.0
+MOEDAS = {
+    "bitcoin": "₿ Bitcoin",
+    "ethereum": "Ξ Ethereum"
+}
 
 
-def dados_btc():
+def buscar_precos():
     url = (
         "https://api.coingecko.com/api/v3/simple/price"
-        "?ids=bitcoin&vs_currencies=usd&include_24hr_change=true"
+        "?ids=bitcoin,ethereum"
+        "&vs_currencies=brl,usd"
+        "&include_24hr_change=true"
     )
 
     resposta = requests.get(url, timeout=10)
     resposta.raise_for_status()
 
-    dados = resposta.json()["bitcoin"]
-
-    return dados["usd"], dados["usd_24h_change"]
+    return resposta.json()
 
 
 def enviar_mensagem(texto):
@@ -37,19 +39,22 @@ def enviar_mensagem(texto):
     resposta.raise_for_status()
 
 
-preco, variacao = dados_btc()
+dados = buscar_precos()
 
-print(f"BTC: US$ {preco:,.2f}")
-print(f"Variação nas últimas 24h: {variacao:.2f}%")
+mensagem = "🚀 BTC & ETH ALERT PRO\n\n"
 
-if variacao <= -LIMITE:
-    enviar_mensagem(
-        f"📉 BTC caiu {abs(variacao):.2f}% nas últimas 24 horas!\n"
-        f"💰 Preço: US$ {preco:,.2f}"
+for moeda, nome in MOEDAS.items():
+    preco_brl = dados[moeda]["brl"]
+    preco_usd = dados[moeda]["usd"]
+    variacao = dados[moeda]["usd_24h_change"]
+
+    mensagem += (
+        f"{nome}\n"
+        f"🇧🇷 R$ {preco_brl:,.2f}\n"
+        f"💵 US$ {preco_usd:,.2f}\n"
+        f"📊 24h: {variacao:+.2f}%\n\n"
     )
 
-elif variacao >= LIMITE:
-    enviar_mensagem(
-        f"📈 BTC subiu {variacao:.2f}% nas últimas 24 horas!\n"
-        f"💰 Preço: US$ {preco:,.2f}"
-    )
+enviar_mensagem(mensagem)
+
+print(mensagem)
