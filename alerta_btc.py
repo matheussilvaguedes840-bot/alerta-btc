@@ -42,7 +42,7 @@ def enviar_mensagem(texto):
 
 
 dados = buscar_dados()
-enviar_mensagem("🧪 TESTE — BTC & ETH Alert Pro está funcionando!")
+
 mensagem = "🚀 BTC & ETH ALERT PRO\n\n"
 
 for moeda in dados:
