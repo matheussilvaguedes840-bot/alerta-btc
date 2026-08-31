@@ -111,19 +111,19 @@ if agora.minute < 5:
         nome = MOEDAS[moeda["id"]]
 
         preco = moeda["current_price"]
-        variacao_1h = moeda.get(
-            "price_change_percentage_1h_in_currency"
-        )
-        variacao_4h = moeda.get(
-            "price_change_percentage_4h"
-        )
-        variacao_24h = moeda.get(
-            "price_change_percentage_24h_in_currency"
-        )
-        variacao_7d = moeda.get(
-            "price_change_percentage_7d_in_currency"
-        )
+      variacao_1h = moeda.get(
+    "price_change_percentage_1h_in_currency"
+)
 
+variacao_4h = moeda.get("price_change_percentage_4h")
+
+variacao_24h = moeda.get(
+    "price_change_percentage_24h_in_currency"
+)
+
+variacao_7d = moeda.get(
+    "price_change_percentage_7d_in_currency"
+)
         mensagem += (
             f"{nome}\n"
             f"🇧🇷 R$ {preco:,.2f}\n"
