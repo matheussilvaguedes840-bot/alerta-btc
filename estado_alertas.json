@@ -1,0 +1,20 @@
+{
+  "bitcoin_1h_3": false,
+  "bitcoin_1h_5": false,
+  "bitcoin_1h_10": false,
+  "bitcoin_24h_3": false,
+  "bitcoin_24h_5": false,
+  "bitcoin_24h_10": false,
+  "bitcoin_7d_3": false,
+  "bitcoin_7d_5": false,
+  "bitcoin_7d_10": false,
+  "ethereum_1h_3": false,
+  "ethereum_1h_5": false,
+  "ethereum_1h_10": false,
+  "ethereum_24h_3": false,
+  "ethereum_24h_5": false,
+  "ethereum_24h_10": false,
+  "ethereum_7d_3": false,
+  "ethereum_7d_5": false,
+  "ethereum_7d_10": false
+}
