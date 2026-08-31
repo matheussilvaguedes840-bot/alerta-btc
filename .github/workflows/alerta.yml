@@ -29,3 +29,10 @@ jobs:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python alerta_btc.py
+      - name: Salvar estado dos alertas
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add estado_alertas.json
+          git commit -m "Atualizar estado dos alertas" || echo "Sem alterações"
+          git push
