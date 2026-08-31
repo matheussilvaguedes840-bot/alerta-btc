@@ -189,3 +189,6 @@ for moeda in dados:
                 enviar_mensagem(mensagem_alerta)
 
             estado[chave] = acima
+salvar_estado(estado)
+
+print("Verificação concluída.")
