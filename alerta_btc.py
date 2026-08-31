@@ -148,19 +148,19 @@ for moeda in dados:
     nome = MOEDAS[moeda["id"]]
 
     variacoes = {
-    "1h": moeda.get(
-        "price_change_percentage_1h_in_currency"
-    ),
-    "4h": moeda.get(
-        "price_change_percentage_4h"
-    ),
-    "24h": moeda.get(
-        "price_change_percentage_24h_in_currency"
-    ),
-    "7d": moeda.get(
-        "price_change_percentage_7d_in_currency"
-    )
-}
+        "1h": moeda.get(
+            "price_change_percentage_1h_in_currency"
+        ),
+        "4h": moeda.get(
+            "price_change_percentage_4h"
+        ),
+        "24h": moeda.get(
+            "price_change_percentage_24h_in_currency"
+        ),
+        "7d": moeda.get(
+            "price_change_percentage_7d_in_currency"
+        )
+    }
 
     for periodo, variacao in variacoes.items():
 
@@ -174,7 +174,7 @@ for moeda in dados:
             acima = abs(variacao) >= limite
             estava_acima = estado.get(chave, False)
 
-            # Só envia quando CRUZAR o limite
+            # Só envia quando cruzar o limite
             if acima and not estava_acima:
 
                 direcao = "📈 SUBIU" if variacao > 0 else "📉 CAIU"
@@ -189,8 +189,3 @@ for moeda in dados:
                 enviar_mensagem(mensagem_alerta)
 
             estado[chave] = acima
-
-
-salvar_estado(estado)
-
-print("Verificação concluída.")
