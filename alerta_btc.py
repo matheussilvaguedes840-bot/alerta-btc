@@ -1,8 +1,7 @@
 import os
 import json
-import requests
-from datetime import datetime, timezone, timedelta
-
+import requestsfrom datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 TOKEN = os.environ["TELEGRAM_TOKEN"]
 CHAT_ID = os.environ["TELEGRAM_CHAT_ID"]
 
@@ -94,13 +93,13 @@ def salvar_estado(estado):
 dados = buscar_dados()
 estado = carregar_estado()
 
-agora = datetime.now(timezone.utc) - timedelta(hours=3)
+agora = datetime.now(ZoneInfo("America/Sao_Paulo"))
 
 # =========================
 # RESUMO HORÁRIO
 # =========================
 
-if True:
+if agora.minute == 0:
 
     mensagem = (
         f"🕐 RESUMO BTC & ETH\n"
