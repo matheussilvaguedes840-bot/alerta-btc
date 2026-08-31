@@ -26,7 +26,41 @@ def buscar_dados():
 
     resposta = requests.get(url, timeout=15)
     resposta.raise_for_status()
-    return resposta.json()
+
+    dados = resposta.json()
+
+    for moeda in dados:
+        historico_url = (
+            f"https://api.coingecko.com/api/v3/coins/{moeda['id']}/market_chart"
+            "?vs_currency=brl&days=1"
+        )
+
+        historico = requests.get(
+            historico_url,
+            timeout=15
+        )
+
+        historico.raise_for_status()
+
+        precos = historico.json()["prices"]
+
+        preco_atual = moeda["current_price"]
+
+        alvo = (
+            datetime.now(timezone.utc).timestamp() * 1000
+            - (4 * 60 * 60 * 1000)
+        )
+
+        preco_4h = min(
+            precos,
+            key=lambda x: abs(x[0] - alvo)
+        )[1]
+
+        moeda["price_change_percentage_4h"] = (
+            (preco_atual - preco_4h) / preco_4h
+        ) * 100
+
+    return dados
 
 
 def enviar_mensagem(texto):
@@ -107,16 +141,19 @@ for moeda in dados:
     nome = MOEDAS[moeda["id"]]
 
     variacoes = {
-        "1h": moeda.get(
-            "price_change_percentage_1h_in_currency"
-        ),
-        "24h": moeda.get(
-            "price_change_percentage_24h_in_currency"
-        ),
-        "7d": moeda.get(
-            "price_change_percentage_7d_in_currency"
-        )
-    }
+    "1h": moeda.get(
+        "price_change_percentage_1h_in_currency"
+    ),
+    "4h": moeda.get(
+        "price_change_percentage_4h"
+    ),
+    "24h": moeda.get(
+        "price_change_percentage_24h_in_currency"
+    ),
+    "7d": moeda.get(
+        "price_change_percentage_7d_in_currency"
+    )
+}
 
     for periodo, variacao in variacoes.items():
 
