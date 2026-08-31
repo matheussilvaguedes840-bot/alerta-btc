@@ -1,7 +1,7 @@
 import os
 import json
 import requests
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 TOKEN = os.environ["TELEGRAM_TOKEN"]
 CHAT_ID = os.environ["TELEGRAM_CHAT_ID"]
@@ -94,7 +94,7 @@ def salvar_estado(estado):
 dados = buscar_dados()
 estado = carregar_estado()
 
-agora = datetime.now(timezone.utc)
+agora = datetime.now(timezone.utc) - timedelta(hours=3)
 
 # =========================
 # RESUMO HORÁRIO
@@ -104,7 +104,7 @@ if True:
 
     mensagem = (
         f"🕐 RESUMO BTC & ETH\n"
-        f"🗓️ {agora.strftime('%d/%m/%Y %H:%M')} UTC\n\n"
+        f"🗓️ {agora.strftime('%d/%m/%Y %H:%M')} (Brasília)\n\n"
     )
 
     for moeda in dados:
