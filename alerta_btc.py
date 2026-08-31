@@ -114,6 +114,9 @@ if agora.minute < 5:
         variacao_1h = moeda.get(
             "price_change_percentage_1h_in_currency"
         )
+        variacao_4h = moeda.get(
+            "price_change_percentage_4h"
+        )
         variacao_24h = moeda.get(
             "price_change_percentage_24h_in_currency"
         )
@@ -125,6 +128,7 @@ if agora.minute < 5:
             f"{nome}\n"
             f"🇧🇷 R$ {preco:,.2f}\n"
             f"🕐 1h: {variacao_1h:+.2f}%\n"
+            f"🕓 4h: {variacao_4h:+.2f}%\n"
             f"📅 24h: {variacao_24h:+.2f}%\n"
             f"📆 7d: {variacao_7d:+.2f}%\n\n"
         )
