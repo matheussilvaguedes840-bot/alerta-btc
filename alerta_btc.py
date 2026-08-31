@@ -100,7 +100,7 @@ agora = datetime.now(timezone.utc) - timedelta(hours=3)
 # RESUMO HORÁRIO
 # =========================
 
-if agora.minute < 5:
+if True:
 
     mensagem = (
         f"🕐 RESUMO BTC & ETH\n"
